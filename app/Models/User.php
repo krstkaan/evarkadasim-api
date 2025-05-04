@@ -21,7 +21,23 @@ class User extends Authenticatable implements JWTSubject
         'telefon',
         'password',
         'onayli',
+        'dogum_tarihi',
+        'gender',
+        'profile_photo_path',
+        'il_id',
+        'ilce_id',
     ];
+
+    public function il()
+    {
+        return $this->belongsTo(IlIlceMahalle::class, 'il_id');
+    }
+
+    public function ilce()
+    {
+        return $this->belongsTo(IlIlceMahalle::class, 'ilce_id');
+    }
+
 
     /**
      * Attributes hidden for arrays.
@@ -38,7 +54,13 @@ class User extends Authenticatable implements JWTSubject
         'email_verified_at' => 'datetime',
         'onayli' => 'boolean',
         'character_test_done' => 'boolean',
+        'dogum_tarihi' => 'date',
     ];
+
+    /**
+     * Custom appended attributes (JSON response).
+     */
+    protected $appends = ['profile_photo_url']; // ✅ eklenen URL döner
 
     /**
      * JWT Identifier.
@@ -54,5 +76,15 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    /**
+     * Accessor: Fotoğrafın tam URL'sini verir.
+     */
+    public function getProfilePhotoUrlAttribute()
+    {
+        return $this->profile_photo_path
+            ? asset('storage/' . $this->profile_photo_path)
+            : null;
     }
 }

@@ -50,6 +50,32 @@ class AuthController extends Controller
         return response()->json($this->authService->me());
     }
 
+    public function updateProfile(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:100',
+            'telefon' => 'nullable|string|max:20',
+            'dogum_tarihi' => 'nullable|date',
+            'gender' => 'nullable|in:male,female,non_binary,prefer_not_to_say',
+            'il_id' => 'nullable|exists:ililcemahalle,id',
+            'ilce_id' => 'nullable|exists:ililcemahalle,id',
+        ]);
+
+
+        $user = $this->authService->updateProfile($request);
+        return response()->json(['message' => 'Profil güncellendi', 'user' => $user]);
+    }
+    public function uploadProfilePhoto(Request $request)
+    {
+        $request->validate([
+            'photo' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        $result = $this->authService->uploadProfilePhoto($request);
+
+        return response()->json($result);
+    }
+
     public function logout()
     {
         $this->authService->logout();
