@@ -52,4 +52,9 @@ class ListingController extends Controller
         $this->service->delete($id, Auth::id());
         return response()->json(['message' => 'İlan silindi.']);
     }
+    public function index()
+    {
+        $listings = $this->service->getAllExceptUser(auth()->id());
+        return response()->json($listings);
+    }
 }

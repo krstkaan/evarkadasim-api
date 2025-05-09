@@ -38,6 +38,8 @@ Route::middleware(['auth:api'])->group(function () {
 
     Route::prefix('listings')->group(function () {
         Route::post('/', [\App\Http\Controllers\ListingController::class, 'store']);
+        Route::get('/', [\App\Http\Controllers\ListingController::class, 'index']);
+
         Route::get('/me', [\App\Http\Controllers\ListingController::class, 'myListing']);
         Route::delete('/{id}', [\App\Http\Controllers\ListingController::class, 'destroy']);
     });

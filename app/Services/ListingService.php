@@ -41,4 +41,12 @@ class ListingService
         $listing->delete();
         return true;
     }
+
+    public function getAllExceptUser($userId)
+    {
+        return Listing::where('user_id', '!=', $userId)
+            ->with(['images']) // gerekirse dropdown relation'lar da eklenebilir
+            ->latest()
+            ->get();
+    }
 }
