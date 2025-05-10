@@ -17,12 +17,20 @@ class Listing extends Model
         'house_type_id',
         'furniture_status_id',
         'heating_type_id',
-        'building_age_id'
+        'building_age_id',
+        'status',
+    ];
+    protected $casts = [
+        'status' => 'string',
     ];
 
     public function images()
     {
         return $this->hasMany(ListingImage::class);
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }
 

@@ -22,14 +22,12 @@ class ListingController extends Controller
             'description' => 'required|string',
             'rent_price' => 'required|numeric|min:0',
             'square_meters' => 'required|integer|min:1',
-
             'roommate_gender_id' => 'required|exists:roommate_genders,id',
             'age_range_id' => 'required|exists:age_ranges,id',
             'house_type_id' => 'required|exists:house_types,id',
             'furniture_status_id' => 'required|exists:furniture_statuses,id',
             'heating_type_id' => 'required|exists:heating_types,id',
             'building_age_id' => 'required|exists:building_ages,id',
-
             'images' => 'required|array|min:1|max:3',
             'images.*' => 'image|mimes:jpeg,png,jpg|max:2048',
         ]);
@@ -52,9 +50,28 @@ class ListingController extends Controller
         $this->service->delete($id, Auth::id());
         return response()->json(['message' => 'İlan silindi.']);
     }
+
     public function index()
     {
         $listings = $this->service->getAllExceptUser(auth()->id());
         return response()->json($listings);
+    }
+
+    // ✅ Admin fonksiyonları
+    public function pending()
+    {
+        return response()->json($this->service->getPendingListings());
+    }
+
+    public function approve($id)
+    {
+        $this->service->approve($id);
+        return response()->json(['message' => 'İlan onaylandı.']);
+    }
+
+    public function reject($id)
+    {
+        $this->service->reject($id);
+        return response()->json(['message' => 'İlan reddedildi.']);
     }
 }

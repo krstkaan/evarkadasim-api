@@ -26,6 +26,8 @@ class User extends Authenticatable implements JWTSubject
         'profile_photo_path',
         'il_id',
         'ilce_id',
+        'listing_id',
+        'is_helios',
     ];
 
     public function il()
@@ -37,6 +39,12 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->belongsTo(IlIlceMahalle::class, 'ilce_id');
     }
+
+    public function listing()
+    {
+        return $this->belongsTo(Listing::class);
+    }
+
 
 
     /**
@@ -55,6 +63,8 @@ class User extends Authenticatable implements JWTSubject
         'onayli' => 'boolean',
         'character_test_done' => 'boolean',
         'dogum_tarihi' => 'date',
+        'is_helios' => 'boolean'
+
     ];
 
     /**

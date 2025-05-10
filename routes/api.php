@@ -9,6 +9,7 @@ use App\Http\Controllers\Dropdown\HeatingTypeController;
 use App\Http\Controllers\Dropdown\HouseTypeController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\Dropdown\RoommateGenderController;
+use App\Http\Controllers\ListingController;
 
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -37,11 +38,16 @@ Route::middleware(['auth:api'])->group(function () {
     });
 
     Route::prefix('listings')->group(function () {
-        Route::post('/', [\App\Http\Controllers\ListingController::class, 'store']);
-        Route::get('/', [\App\Http\Controllers\ListingController::class, 'index']);
-
-        Route::get('/me', [\App\Http\Controllers\ListingController::class, 'myListing']);
-        Route::delete('/{id}', [\App\Http\Controllers\ListingController::class, 'destroy']);
+        Route::post('/', [ListingController::class, 'store']);
+        Route::get('/', [ListingController::class, 'index']);
+        Route::get('/me', [ListingController::class, 'myListing']);
+        Route::delete('/{id}', [ListingController::class, 'destroy']);
     });
+});
+
+Route::prefix('helios')->middleware(['auth:api', 'is_helios'])->group(function () {
+    Route::get('/pending-listings', [ListingController::class, 'pending']);
+    Route::post('/approve-listing/{id}', [ListingController::class, 'approve']);
+    Route::post('/reject-listing/{id}', [ListingController::class, 'reject']);
 });
 

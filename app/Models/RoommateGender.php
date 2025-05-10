@@ -6,6 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class RoommateGender extends Model
 {
-    protected $fillable = ['name'];
+    protected $fillable = ['label'];
 }
 
