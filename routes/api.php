@@ -29,18 +29,20 @@ Route::middleware(['auth:api'])->group(function () {
 
 
     Route::prefix('dropdowns')->group(function () {
-        Route::apiResource('roommate-genders', RoommateGenderController::class)->only(['index', 'store', 'update', 'destroy']);
-        Route::apiResource('age-ranges', AgeRangeController::class)->only(['index', 'store', 'update', 'destroy']);
-        Route::apiResource('house-types', HouseTypeController::class)->only(['index', 'store', 'update', 'destroy']);
-        Route::apiResource('furniture-statuses', FurnitureStatusController::class)->only(['index', 'store', 'update', 'destroy']);
-        Route::apiResource('heating-types', HeatingTypeController::class)->only(['index', 'store', 'update', 'destroy']);
-        Route::apiResource('building-ages', BuildingAgeController::class)->only(['index', 'store', 'update', 'destroy']);
+        Route::apiResource('roommate-genders', RoommateGenderController::class)->only(['index', 'store', 'update', 'destroy', 'show']);
+        Route::apiResource('age-ranges', AgeRangeController::class)->only(['index', 'store', 'update', 'destroy', 'show']);
+        Route::apiResource('house-types', HouseTypeController::class)->only(['index', 'store', 'update', 'destroy', 'show']);
+        Route::apiResource('furniture-statuses', FurnitureStatusController::class)->only(['index', 'store', 'update', 'destroy', 'show']);
+        Route::apiResource('heating-types', HeatingTypeController::class)->only(['index', 'store', 'update', 'destroy', 'show']);
+        Route::apiResource('building-ages', BuildingAgeController::class)->only(['index', 'store', 'update', 'destroy', 'show']);
     });
 
     Route::prefix('listings')->group(function () {
         Route::post('/', [ListingController::class, 'store']);
         Route::get('/', [ListingController::class, 'index']);
         Route::get('/me', [ListingController::class, 'myListing']);
+        Route::get('/{id}', [ListingController::class, 'show']);
+
         Route::delete('/{id}', [ListingController::class, 'destroy']);
     });
 });

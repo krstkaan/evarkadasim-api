@@ -89,4 +89,8 @@ class ListingService
         $listing = Listing::findOrFail($listingId);
         $listing->update(['status' => 'rejected']);
     }
+    public function getById($id)
+    {
+        return Listing::with(['images', 'user'])->findOrFail($id);
+    }
 }

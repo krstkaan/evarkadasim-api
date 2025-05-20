@@ -74,4 +74,11 @@ class ListingController extends Controller
         $this->service->reject($id);
         return response()->json(['message' => 'İlan reddedildi.']);
     }
+
+    public function show($id)
+    {
+        $listing = $this->service->getById($id);
+        return response()->json($listing);
+    }
+
 }
