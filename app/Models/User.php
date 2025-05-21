@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use App\Models\Favorite;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -96,5 +97,10 @@ class User extends Authenticatable implements JWTSubject
         return $this->profile_photo_path
             ? asset('storage/' . $this->profile_photo_path)
             : null;
+    }
+
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class);
     }
 }

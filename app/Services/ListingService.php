@@ -41,7 +41,7 @@ class ListingService
     {
         return Listing::where('user_id', $userId)
             ->with('images')
-            ->first();
+            ->get();
     }
 
     public function delete($id, $userId)

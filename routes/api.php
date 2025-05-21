@@ -10,6 +10,7 @@ use App\Http\Controllers\Dropdown\HouseTypeController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\Dropdown\RoommateGenderController;
 use App\Http\Controllers\ListingController;
+use App\Http\Controllers\FavoriteController;
 
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -42,7 +43,6 @@ Route::middleware(['auth:api'])->group(function () {
         Route::get('/', [ListingController::class, 'index']);
         Route::get('/me', [ListingController::class, 'myListing']);
         Route::get('/{id}', [ListingController::class, 'show']);
-
         Route::delete('/{id}', [ListingController::class, 'destroy']);
     });
 });
@@ -51,5 +51,11 @@ Route::prefix('helios')->middleware(['auth:api', 'is_helios'])->group(function (
     Route::get('/pending-listings', [ListingController::class, 'pending']);
     Route::post('/approve-listing/{id}', [ListingController::class, 'approve']);
     Route::post('/reject-listing/{id}', [ListingController::class, 'reject']);
+});
+
+Route::prefix('favorites')->middleware(['auth:api'])->group(function () {
+    Route::get('/', [FavoriteController::class, 'index']);
+    Route::post('/toggle', [FavoriteController::class, 'toggle']);
+    Route::get('/check', [FavoriteController::class, 'check']);
 });
 
