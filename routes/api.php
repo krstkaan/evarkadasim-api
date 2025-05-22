@@ -11,6 +11,7 @@ use App\Http\Controllers\LocationController;
 use App\Http\Controllers\Dropdown\RoommateGenderController;
 use App\Http\Controllers\ListingController;
 use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\ChatController;
 
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -44,6 +45,13 @@ Route::middleware(['auth:api'])->group(function () {
         Route::get('/me', [ListingController::class, 'myListing']);
         Route::get('/{id}', [ListingController::class, 'show']);
         Route::delete('/{id}', [ListingController::class, 'destroy']);
+    });
+
+    Route::prefix('chat')->group(function () {
+        Route::post('/start', [ChatController::class, 'startChat']);
+        Route::get('/my-rooms', [ChatController::class, 'myRooms']);
+        Route::post('/messages', [ChatController::class, 'storeMessage']); // ✅ bu satır eklenecek
+
     });
 });
 
