@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-
+use App\Services\UserLogService;
 
 class AuthService
 {
@@ -21,7 +21,10 @@ class AuthService
             'onayli' => true,
         ]);
 
+        auth()->login($user); // ✨ Bu satır eklenirse auth()->id() artık çalışır
         $token = JWTAuth::fromUser($user);
+
+        UserLogService::log($request, 'register', 'Yeni kullanıcı kaydı yapıldı.');
 
         return ['user' => $user, 'token' => $token];
     }
@@ -35,19 +38,21 @@ class AuthService
         $user = auth()->user();
 
         if (!$user->onayli) {
-            auth()->logout(); // Token'ı iptal et
+            auth()->logout();
             return [
                 'error' => 'Hesabınız onaylı değil. Lütfen destek ile iletişime geçin.',
                 'code' => 403
             ];
         }
 
+        // ✅ Log ekle
+        UserLogService::log(request(), 'login', 'Kullanıcı giriş yaptı.');
+
         return [
             'user' => $user,
             'token' => $token,
         ];
     }
-
 
     public function me(): mixed
     {
@@ -84,6 +89,9 @@ class AuthService
 
         $user->save();
 
+        // ✅ Log ekle
+        UserLogService::log($request, 'update_profile', 'Kullanıcı profili güncellendi.');
+
         return $user->load(['il', 'ilce']);
     }
 
@@ -91,17 +99,18 @@ class AuthService
     {
         $user = auth()->user();
 
-        // Önceki fotoğrafı sil
         if ($user->profile_photo_path) {
             Storage::disk('public')->delete($user->profile_photo_path);
         }
 
-        // Yeni fotoğrafı kaydet
         $filename = 'user_' . $user->id . '_' . time() . '.' . $request->file('photo')->getClientOriginalExtension();
         $path = $request->file('photo')->storeAs('profiles', $filename, 'public');
 
         $user->profile_photo_path = $path;
         $user->save();
+
+        // ✅ Log ekle
+        UserLogService::log($request, 'upload_profile_photo', 'Kullanıcı profil fotoğrafı güncelledi.');
 
         return [
             'message' => 'Profil fotoğrafı başarıyla yüklendi.',
@@ -112,6 +121,7 @@ class AuthService
 
     public function logout(): void
     {
+        UserLogService::log(request(), 'logout', 'Kullanıcı çıkış yaptı.');
         auth()->logout();
     }
 }

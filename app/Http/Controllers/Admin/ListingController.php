@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Listing;
 use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
+use App\Services\ListingLogService;
 
 class ListingController extends Controller
 {
@@ -66,6 +67,9 @@ class ListingController extends Controller
         $listing->status = 'approved';
         $listing->save();
 
+        // Log oluştur
+        ListingLogService::log($listing->id, 'approve', 'İlan onaylandı.');
+
         return response()->json(['message' => 'İlan başarıyla onaylandı.']);
     }
 
@@ -78,6 +82,9 @@ class ListingController extends Controller
         $listing->status = 'rejected';
         $listing->save();
 
+        // Log oluştur
+        ListingLogService::log($listing->id, 'reject', 'İlan reddedildi.');
+
         return response()->json(['message' => 'İlan reddedildi.']);
     }
 
@@ -88,6 +95,9 @@ class ListingController extends Controller
     {
         $listing = Listing::findOrFail($id);
         $listing->delete();
+
+        // Log oluştur
+        ListingLogService::log($listing->id, 'delete', 'İlan silindi.');
 
         return response()->json(['message' => 'İlan başarıyla silindi.']);
     }

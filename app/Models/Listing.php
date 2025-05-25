@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Listing extends Model
 {
+    use SoftDeletes; // EKLENDİ
+
     protected $fillable = [
         'user_id',
         'title',
@@ -20,6 +23,7 @@ class Listing extends Model
         'building_age_id',
         'status',
     ];
+
     protected $casts = [
         'status' => 'string',
     ];
@@ -28,9 +32,11 @@ class Listing extends Model
     {
         return $this->hasMany(ListingImage::class);
     }
+
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 }
+
 

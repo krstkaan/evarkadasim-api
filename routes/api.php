@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\LogController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CharacterTestController;
 use App\Http\Controllers\Dropdown\AgeRangeController;
@@ -95,5 +96,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('/{id}/reject', [AdminListingController::class, 'reject'])->name('listings.reject');
             Route::delete('/{id}', [AdminListingController::class, 'destroy'])->name('listings.destroy');
         });
+            Route::get('/logs', [LogController::class, 'index']);
+
+
     });
 });

@@ -63,18 +63,6 @@ class ListingController extends Controller
         return response()->json($this->service->getPendingListings());
     }
 
-    public function approve($id)
-    {
-        $this->service->approve($id);
-        return response()->json(['message' => 'İlan onaylandı.']);
-    }
-
-    public function reject($id)
-    {
-        $this->service->reject($id);
-        return response()->json(['message' => 'İlan reddedildi.']);
-    }
-
     public function show($id)
     {
         $listing = $this->service->getById($id);

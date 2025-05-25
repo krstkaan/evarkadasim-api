@@ -5,26 +5,25 @@ namespace App\Services;
 use App\Models\Listing;
 use App\Models\ListingImage;
 use Illuminate\Support\Facades\Storage;
+use App\Services\ListingLogService;
+use App\Models\User;
 
 class ListingService
 {
     public function create(array $data, $images, $userId)
     {
-        // Eğer bu kullanıcıya ait aktif ilan varsa, yenisini oluşturma
         if (Listing::where('user_id', $userId)->exists()) {
             throw new \Exception("Zaten bir ilanınız var.");
         }
 
         $data['user_id'] = $userId;
-        $data['status'] = 'pending'; // ✅ Yeni ilanlar admin onayını bekleyecek
+        $data['status'] = 'pending';
 
         $listing = Listing::create($data);
 
-        // Kullanıcının ilan referansını güncelle
-        $user = \App\Models\User::findOrFail($userId);
+        $user = User::findOrFail($userId);
         $user->update(['listing_id' => $listing->id]);
 
-        // Görselleri kaydet
         foreach ($images as $image) {
             $path = $image->store('uploads/listings', 'public');
 
@@ -33,6 +32,9 @@ class ListingService
                 'image_path' => $path,
             ]);
         }
+
+        // ✅ Log oluştur
+        ListingLogService::log($listing->id, 'create', 'Kullanıcı yeni ilan oluşturdu.');
 
         return $listing->load('images');
     }
@@ -50,10 +52,13 @@ class ListingService
             ->where('user_id', $userId)
             ->firstOrFail();
 
-        $user = \App\Models\User::findOrFail($userId);
+        $user = User::findOrFail($userId);
         if ($user->listing_id === $listing->id) {
             $user->update(['listing_id' => null]);
         }
+
+        // ✅ Log oluştur (önce log, sonra silme)
+        ListingLogService::log($listing->id, 'delete', 'Kullanıcı ilanı sildi.');
 
         $listing->delete();
         return true;
@@ -62,13 +67,12 @@ class ListingService
     public function getAllExceptUser($userId)
     {
         return Listing::where('user_id', '!=', $userId)
-            ->where('status', 'approved') // ✅ Sadece yayınlanmış ilanlar
+            ->where('status', 'approved')
             ->with(['images'])
             ->latest()
             ->get();
     }
 
-    // Admin için bekleyen ilanları getir
     public function getPendingListings()
     {
         return Listing::where('status', 'pending')
@@ -77,18 +81,6 @@ class ListingService
             ->get();
     }
 
-    // Admin onayı
-    public function approve($listingId)
-    {
-        $listing = Listing::findOrFail($listingId);
-        $listing->update(['status' => 'approved']);
-    }
-
-    public function reject($listingId)
-    {
-        $listing = Listing::findOrFail($listingId);
-        $listing->update(['status' => 'rejected']);
-    }
     public function getById($id)
     {
         return Listing::with(['images', 'user'])->findOrFail($id);
