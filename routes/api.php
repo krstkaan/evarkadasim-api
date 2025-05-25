@@ -52,38 +52,48 @@ Route::middleware(['auth:api'])->group(function () {
         Route::get('/my-rooms', [ChatController::class, 'myRooms']);
         Route::post('/messages', [ChatController::class, 'storeMessage']);
     });
-});
 
-Route::prefix('favorites')->middleware(['auth:api'])->group(function () {
-    Route::get('/', [FavoriteController::class, 'index']);
-    Route::post('/toggle', [FavoriteController::class, 'toggle']);
-    Route::get('/check', [FavoriteController::class, 'check']);
+    Route::prefix('favorites')->group(function () {
+        Route::get('/', [FavoriteController::class, 'index']);
+        Route::post('/toggle', [FavoriteController::class, 'toggle']);
+        Route::get('/check', [FavoriteController::class, 'check']);
+    });
+
 });
 
 Route::prefix('admin')->name('admin.')->group(function () {
+
     Route::post('/login', [AdminAuthController::class, 'login'])->name('login');
 
     Route::middleware(['auth:api', 'heilos.admin'])->group(function () {
+
+        // Admin oturum işlemleri
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
         Route::get('/me', [AdminAuthController::class, 'me'])->name('me');
         Route::post('/update-profile', [AdminAuthController::class, 'updateProfile'])->name('updateProfile');
 
-        // Kullanıcı yönetimi
-        Route::apiResource('/users', UserController::class);
+        // Admin kullanıcı işlemleri
 
-        // Admin ve normal kullanıcı ayrımı
-        Route::get('/admins', [UserController::class, 'admins'])->name('admins');
-        Route::get('/regular-users', [UserController::class, 'regularUsers'])->name('regularUsers');
-        Route::get('/total-users', [UserController::class, 'totalUsers'])->name('totalUsers');
+        Route::prefix('users')->group(function () {
+            Route::get('/admins', [UserController::class, 'admins'])->name('users.admins');
+            Route::get('/regular-users', [UserController::class, 'regularUsers'])->name('users.regularUsers');
+            Route::get('/total-users', [UserController::class, 'totalUsers'])->name('users.totalUsers');
+            Route::put('/{id}', [UserController::class, 'update'])->name('users.update');
+            Route::get('/{id}', [UserController::class, 'show'])->name('users.show');
+        });
 
+        // Admin listeleme işlemleri
 
-        // İlan yönetimi
-        Route::get('/listings/count', [AdminListingController::class, 'count'])->name('listings.count'); // İsimlendirme de yapabilirsiniz
-
-        Route::get('/listings', [AdminListingController::class, 'index'])->name('listings.index');
-        Route::post('/listings/{id}/approve', [AdminListingController::class, 'approve'])->name('listings.approve');
-        Route::post('/listings/{id}/reject', [AdminListingController::class, 'reject'])->name('listings.reject');
-        Route::get('/listings/{id}', [AdminListingController::class, 'show'])->name('listings.show');
-        Route::delete('/listings/{id}', [AdminListingController::class, 'destroy'])->name('listings.destroy');
+        Route::prefix('listings')->group(function () {
+            Route::get('/pending', [AdminListingController::class, 'pending'])->name('listings.pending');
+            Route::get('/approved', [AdminListingController::class, 'approved'])->name('listings.approved');
+            Route::get('/rejected', [AdminListingController::class, 'rejected'])->name('listings.rejected');
+            Route::get('/', [AdminListingController::class, 'index'])->name('listings.index');
+            Route::get('/total-listings', [AdminListingController::class, 'totalListings'])->name('listings.totalListings');
+            Route::get('/{id}', [AdminListingController::class, 'show'])->name('listings.show');
+            Route::post('/{id}/approve', [AdminListingController::class, 'approve'])->name('listings.approve');
+            Route::post('/{id}/reject', [AdminListingController::class, 'reject'])->name('listings.reject');
+            Route::delete('/{id}', [AdminListingController::class, 'destroy'])->name('listings.destroy');
+        });
     });
 });

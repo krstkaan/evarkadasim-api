@@ -95,9 +95,109 @@ class ListingController extends Controller
     /**
      * Toplam ilan sayısını döndür
      */
-    public function count()
+    public function totalListings()
     {
-        $count = Listing::count();
-        return response()->json(['count' => $count]);
+        $totalListings = Listing::count();
+        return response()->json(['total' => $totalListings]);
+    }
+
+    /**
+     * Bekleyen ilanları listele
+     */
+    public function pending(Request $request)
+    {
+        $query = Listing::where('status', 'pending');
+
+        // Arama filtresi
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        // Sıralama
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortOrder = $request->get('sort_order', 'desc');
+
+        $allowedSorts = ['title', 'created_at', 'updated_at'];
+        if (in_array($sortBy, $allowedSorts)) {
+            $query->orderBy($sortBy, $sortOrder);
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
+
+        // Sayfalama
+        $perPage = $request->get('per_page', 15);
+        $listings = $query->paginate($perPage);
+
+        return response()->json($listings);
+    }
+    /**
+     * Onaylanmış ilanları listele
+     */
+    public function approved(Request $request)
+    {
+        $query = Listing::where('status', 'approved');
+
+        // Arama filtresi
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        // Sıralama
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortOrder = $request->get('sort_order', 'desc');
+
+        $allowedSorts = ['title', 'created_at', 'updated_at'];
+        if (in_array($sortBy, $allowedSorts)) {
+            $query->orderBy($sortBy, $sortOrder);
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
+
+        // Sayfalama
+        $perPage = $request->get('per_page', 15);
+        $listings = $query->paginate($perPage);
+
+        return response()->json($listings);
+    }
+    /**
+     * Reddedilen ilanları listele
+     */
+    public function rejected(Request $request)
+    {
+        $query = Listing::where('status', 'rejected');
+
+        // Arama filtresi
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        // Sıralama
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortOrder = $request->get('sort_order', 'desc');
+
+        $allowedSorts = ['title', 'created_at', 'updated_at'];
+        if (in_array($sortBy, $allowedSorts)) {
+            $query->orderBy($sortBy, $sortOrder);
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
+
+        // Sayfalama
+        $perPage = $request->get('per_page', 15);
+        $listings = $query->paginate($perPage);
+
+        return response()->json($listings);
     }
 }
