@@ -42,6 +42,10 @@ class AuthController extends Controller
             return response()->json(['error' => 'Geçersiz giriş bilgileri'], 401);
         }
 
+        if (isset($result['error'])) {
+            return response()->json(['error' => $result['error']], $result['code']);
+        }
+
         return response()->json($result);
     }
 

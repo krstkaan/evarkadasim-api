@@ -32,11 +32,22 @@ class AuthService
             return false;
         }
 
+        $user = auth()->user();
+
+        if (!$user->onayli) {
+            auth()->logout(); // Token'ı iptal et
+            return [
+                'error' => 'Hesabınız onaylı değil. Lütfen destek ile iletişime geçin.',
+                'code' => 403
+            ];
+        }
+
         return [
-            'user' => auth()->user(),
+            'user' => $user,
             'token' => $token,
         ];
     }
+
 
     public function me(): mixed
     {
