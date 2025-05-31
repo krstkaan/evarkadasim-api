@@ -26,6 +26,9 @@ Bu proje, Roomiefies mobil uygulamasının Laravel tabanlı RESTful API servisid
   - Kullanıcı bir ilanı favorileyebilir ve favori ilanları görüntüleyebilir.
   - `/favorites/toggle` ve `/favorites/check` endpoint'leri ile favori kontrolü sağlanır.
 
+- 💬 **Gerçek Zamanlı Sohbet:**
+  - Firebase Real Time Database ile ilan sahibine mesaj gönderilebilecek gerçek zamanlı sohbet altyapısı sayesinde kullanıcılar arası sorunsuz iletişim sağlanır.
+
 ---
 
 ## 🔧 Yapılacaklar
@@ -38,7 +41,6 @@ Bu proje, Roomiefies mobil uygulamasının Laravel tabanlı RESTful API servisid
   - Ev arkadaşlığı başlatıldığında taraflardan belirli aralıklarla değerlendirme alınacak.
   - Bu geri bildirimler, eşleşme algoritmasını sürekli iyileştirecek şekilde sisteme entegre edilecek.
 
-- 💬 **Gerçek Zamanlı Sohbet:**
-  - Laravel WebSockets ya da Pusher ile ilan sahibine mesaj gönderilebilecek gerçek zamanlı sohbet altyapısı planlanmaktadır.
+
 
 ---
