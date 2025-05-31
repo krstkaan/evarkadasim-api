@@ -54,7 +54,21 @@ class ListingController extends Controller
     public function index()
     {
         $listings = $this->service->getAllExceptUser(auth()->id());
-        return response()->json($listings);
+        return response()->json($listings->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'title' => $item->title,
+                'description' => $item->description,
+                'rent_price' => $item->rent_price,
+                'square_meters' => $item->square_meters,
+                'match_score' => $item->match_score,
+                'images' => $item->images->map(function ($img) {
+                    return [
+                        'image_path' => $img->image_path
+                    ];
+                }),
+            ];
+        }));
     }
 
     // ✅ Admin fonksiyonları

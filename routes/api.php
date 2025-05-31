@@ -16,6 +16,8 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\UserController; // Yeni eklenen
 use App\Http\Controllers\Admin\ListingController as AdminListingController;
+use App\Http\Controllers\RecommendationController;
+use App\Http\Controllers\UserRatingController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -27,6 +29,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('/character-test-questions', [CharacterTestController::class, 'index']);
     Route::post('/character-test-question', [CharacterTestController::class, 'store']);
     Route::post('/character-test-submit', [CharacterTestController::class, 'submit']);
+    Route::post('/match-score', [RecommendationController::class, 'matchScore']);
     Route::post('upload-profile-photo', [AuthController::class, 'uploadProfilePhoto']);
     Route::get('/cities', [LocationController::class, 'cities']);
     Route::get('/cities/{cityId}', [LocationController::class, 'districts']);
@@ -58,6 +61,11 @@ Route::middleware(['auth:api'])->group(function () {
         Route::get('/', [FavoriteController::class, 'index']);
         Route::post('/toggle', [FavoriteController::class, 'toggle']);
         Route::get('/check', [FavoriteController::class, 'check']);
+    });
+
+    Route::prefix('user-ratings')->group(function () {
+        Route::post('/', [UserRatingController::class, 'store']);
+        Route::get('/{userId}', [UserRatingController::class, 'index']);
     });
 
 });

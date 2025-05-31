@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Listing;
 use App\Models\ListingImage;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use App\Services\ListingLogService;
 use App\Models\User;
@@ -66,11 +67,50 @@ class ListingService
 
     public function getAllExceptUser($userId)
     {
-        return Listing::where('user_id', '!=', $userId)
+        $currentUser = User::findOrFail($userId);
+
+        // Karakter etiketi yoksa boş dön
+        if (!$currentUser->character_label) {
+            return collect();
+        }
+
+        // Diğer kullanıcıların ilanlarını al
+        $listings = Listing::where('user_id', '!=', $userId)
             ->where('status', 'approved')
-            ->with(['images'])
+            ->with(['images', 'user'])
             ->latest()
             ->get();
+
+        // Skor hesapla ve filtrele
+        $filtered = $listings->map(function ($listing) use ($currentUser) {
+            $label1 = $currentUser->character_label;
+            $label2 = $listing->user->character_label;
+
+            if (!$label2) {
+                return null;
+            }
+
+            $response = Http::timeout(2)->post('http://192.168.1.111:8001/predict-score', [
+                'label1' => $label1,
+                'label2' => $label2,
+            ]);
+
+            if ($response->failed()) {
+                return null;
+            }
+
+            $score = $response->json('score');
+
+            if ($score < 70) {
+                return null;
+            }
+
+            // İlan içine skoru ekle
+            $listing->match_score = $score;
+            return $listing;
+        })->filter()->values(); // null olanları at
+
+        return $filtered;
     }
 
     public function getPendingListings()

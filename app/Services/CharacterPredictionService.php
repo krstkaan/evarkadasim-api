@@ -8,7 +8,7 @@ class CharacterPredictionService
 {
     public function predict(array $answers): ?string
     {
-        $response = Http::post('http://127.0.0.1:8000/predict', [
+        $response = Http::post('http://192.168.1.111:8001/predict', [
             'answers' => $answers
         ]);
 

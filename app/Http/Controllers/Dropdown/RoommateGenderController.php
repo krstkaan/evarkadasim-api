@@ -24,7 +24,7 @@ class RoommateGenderController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'label' => 'required|string|max:255',
         ]);
         return response()->json($this->service->create($validated));
     }
