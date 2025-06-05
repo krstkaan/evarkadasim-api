@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\UserController; // Yeni eklenen
 use App\Http\Controllers\Admin\ListingController as AdminListingController;
 use App\Http\Controllers\RecommendationController;
+use App\Http\Controllers\RoommateRequestController;
 use App\Http\Controllers\UserRatingController;
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -68,6 +69,13 @@ Route::middleware(['auth:api'])->group(function () {
         Route::get('/{userId}', [UserRatingController::class, 'index']);
     });
 
+    Route::prefix('roommate-requests')->group(function () {
+        Route::post('/', [RoommateRequestController::class, 'store']);
+        Route::get('/', [RoommateRequestController::class, 'index']);
+        Route::get('/incoming', [RoommateRequestController::class, 'incoming']);
+        Route::post('/{id}/decide', [RoommateRequestController::class, 'decide']);
+    });
+
 });
 
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -104,7 +112,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('/{id}/reject', [AdminListingController::class, 'reject'])->name('listings.reject');
             Route::delete('/{id}', [AdminListingController::class, 'destroy'])->name('listings.destroy');
         });
-            Route::get('/logs', [LogController::class, 'index']);
+        Route::get('/logs', [LogController::class, 'index']);
 
 
     });

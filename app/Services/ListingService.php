@@ -101,7 +101,7 @@ class ListingService
 
             $score = $response->json('score');
 
-            if ($score < 70) {
+            if ($score < 50) {
                 return null;
             }
 
@@ -124,5 +124,12 @@ class ListingService
     public function getById($id)
     {
         return Listing::with(['images', 'user'])->findOrFail($id);
+    }
+
+    public function closeById($id)
+    {
+        $listing = Listing::findOrFail($id);
+        $listing->status = 'closed';
+        $listing->save();
     }
 }
