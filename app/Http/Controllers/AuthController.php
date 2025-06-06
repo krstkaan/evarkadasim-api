@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\RoommateRequest;
+use Auth;
 use Illuminate\Http\Request;
 use App\Services\AuthService;
 
@@ -51,7 +53,41 @@ class AuthController extends Controller
 
     public function me()
     {
-        return response()->json($this->authService->me());
+        $user = Auth::user();
+
+        // 1. Kullanıcının sahibi olduğu ilanlara gelen accepted roommate request var mı?
+        $ownerMatch = RoommateRequest::whereHas('listing', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->where('status', 'accepted')->with('user')->first();
+
+        if ($ownerMatch) {
+            $user->roommate = [
+                'id' => $ownerMatch->user->id,
+                'full_name' => $ownerMatch->user->name,
+                'started_at' => $ownerMatch->updated_at->toDateString(),
+            ];
+            return $user;
+        }
+
+        // 2. Kullanıcı başvuru yapmış ve kabul edilmiş mi?
+        $requesterMatch = RoommateRequest::where('user_id', $user->id)
+            ->where('status', 'accepted')
+            ->with('listing.user')
+            ->first();
+
+        if ($requesterMatch) {
+            $owner = $requesterMatch->listing->user;
+            $user->roommate = [
+                'id' => $owner->id,
+                'full_name' => $owner->name,
+                'started_at' => $requesterMatch->updated_at->toDateString(),
+            ];
+            return $user;
+        }
+
+        // 3. Eşleşme yoksa null dön
+        $user->roommate = null;
+        return $user;
     }
 
     public function updateProfile(Request $request)
