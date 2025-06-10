@@ -13,7 +13,7 @@ class IlIlceMahalleImportSeeder extends Seeder
      */
     public function run()
     {
-        $path = storage_path('seeders/data/ililcemahalle_202506110016.csv');
+        $path = base_path('database/seeders/data/ililcemahalle_202506110016.csv');
         $handle = fopen($path, 'r');
         $header = fgetcsv($handle, 0, ',');
 
