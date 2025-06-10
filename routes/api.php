@@ -41,7 +41,11 @@ Route::get('/migrate', function () {
 
 Route::get('/run-ililce-seed', function () {
     try {
-        Artisan::call('db:seed', ['--class' => 'IlIlceMahalleSeeder']);
+        Artisan::call('db:seed', [
+            '--class' => 'IlIlceMahalleSeeder',
+            '--force' => true,
+        ]);
+
         return response()->json([
             'status' => '✅ Seeder başarıyla çalıştı',
             'output' => Artisan::output()
@@ -53,6 +57,7 @@ Route::get('/run-ililce-seed', function () {
         ], 500);
     }
 });
+
 
 Route::middleware(['auth:api'])->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
