@@ -42,7 +42,7 @@ Route::get('/migrate', function () {
 Route::get('/run-ililce-seed', function () {
     try {
         Artisan::call('db:seed', [
-            '--class' => 'IlIlceMahalleSeeder',
+            '--class' => 'IlIlceMahalleImportSeeder',
             '--force' => true,
         ]);
 
