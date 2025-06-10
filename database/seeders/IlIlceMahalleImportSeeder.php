@@ -13,7 +13,7 @@ class IlIlceMahalleImportSeeder extends Seeder
      */
     public function run(): void
     {
-        $path = storage_path('seeders/data/ililcemahalle_202506110016.csv');
+        $path = base_path('database/seeders/data/ililcemahalle_202506110016.csv');
         $handle = fopen($path, 'r');
         if (!$handle) {
             throw new \Exception("CSV dosyası açılamadı: $path");
