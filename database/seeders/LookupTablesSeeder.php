@@ -32,7 +32,7 @@ class LookupTablesSeeder extends Seeder
 
                 DB::table($item['table'])->insert([
                     'id' => (int) $data['id'],
-                    'name' => $data['name'],
+                    'label' => $data['label'],
                     'created_at' => $data['created_at'] ?? now(),
                     'updated_at' => $data['updated_at'] ?? now(),
                 ]);
