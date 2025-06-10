@@ -11,59 +11,29 @@ class IlIlceMahalleImportSeeder extends Seeder
     /**
      * Run the database seeds.
      */
-    public function run()
+    public function run(): void
     {
-        $path = base_path('database/seeders/data/ililcemahalle_202506110016.csv');
+        $path = storage_path('seeders/data/ililcemahalle_202506110016.csv');
         $handle = fopen($path, 'r');
+        if (!$handle) {
+            throw new \Exception("CSV dosyası açılamadı: $path");
+        }
+
         $header = fgetcsv($handle, 0, ',');
 
-        $rows = [];
         while (($row = fgetcsv($handle, 0, ',')) !== false) {
-            $rows[] = $row;
-        }
-        fclose($handle);
-
-        $idMap = [];
-
-        foreach ($rows as $row) {
-            $id = (int) $row[0];
-            $name = $row[1];
-            $ustID = (int) $row[2];
-
-            $idMap[$id] = [
-                'name' => $name,
-                'ustID' => $ustID,
-            ];
-        }
-
-        foreach ($idMap as $id => $entry) {
-            if ($entry['ustID'] === 0) {
-                continue;
-            }
-
-            $parent = $idMap[$entry['ustID']] ?? null;
-            if (!$parent)
-                continue;
-
-            $grandparent = $idMap[$parent['ustID']] ?? null;
-
-            if ($parent['ustID'] === 0) {
-                $il = $parent['name'];
-                $ilce = $entry['name'];
-                $mahalle = null;
-            } elseif ($grandparent) {
-                $il = $grandparent['name'];
-                $ilce = $parent['name'];
-                $mahalle = $entry['name'];
-            } else {
-                continue;
-            }
-
             DB::table('ililcemahalle')->insert([
-                'il' => $il,
-                'ilce' => $ilce,
-                'mahalle' => $mahalle,
+                'id' => (int) $row[0],
+                'SehirIlceMahalleAdi' => $row[1],
+                'UstID' => (int) $row[2],
+                'minlongitude' => $row[3] !== '' ? (float) $row[3] : null,
+                'minlatitude' => $row[4] !== '' ? (float) $row[4] : null,
+                'maxlongitude' => $row[5] !== '' ? (float) $row[5] : null,
+                'maxlatitude' => $row[6] !== '' ? (float) $row[6] : null,
+                'MahalleID' => $row[7] !== '' ? (int) $row[7] : null,
             ]);
         }
+
+        fclose($handle);
     }
 }
