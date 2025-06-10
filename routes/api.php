@@ -20,12 +20,23 @@ use App\Http\Controllers\RecommendationController;
 use App\Http\Controllers\RoommateRequestController;
 use App\Http\Controllers\UserRatingController;
 use App\Http\Controllers\MatchFeedbackController;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Response;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/migrate', function () {
-    \Artisan::call('migrate', ['--force' => true]);
-    return response()->json(['message' => 'Migration çalıştı!']);
+    try {
+        Artisan::call('migrate', ['--force' => true]);
+        return Response::json([
+            'message' => 'Migration başarılı',
+            'output' => Artisan::output()
+        ], 200);
+    } catch (\Throwable $e) {
+        return Response::json([
+            'error' => $e->getMessage()
+        ], 500);
+    }
 });
 Route::middleware(['auth:api'])->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
