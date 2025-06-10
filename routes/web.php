@@ -2,7 +2,13 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/migrate', function () {
-    \Artisan::call('migrate', ['--force' => true]);
-    return 'Migration çalıştı!';
+use Illuminate\Support\Facades\Artisan;
+
+Route::get('/run-storage-link', function () {
+    try {
+        Artisan::call('storage:link');
+        return '✅ storage:link başarılı';
+    } catch (\Throwable $e) {
+        return '❌ Hata: ' . $e->getMessage();
+    }
 });
