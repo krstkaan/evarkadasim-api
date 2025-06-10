@@ -25,35 +25,51 @@ use Illuminate\Support\Facades\Response;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
-Route::get('/migrate', function () {
-    try {
-        Artisan::call('migrate', ['--force' => true]);
-        return Response::json([
-            'message' => 'Migration başarılı',
-            'output' => Artisan::output()
-        ], 200);
-    } catch (\Throwable $e) {
-        return Response::json([
-            'error' => $e->getMessage()
-        ], 500);
-    }
-});
+// Route::get('/migrate', function () {
+//     try {
+//         Artisan::call('migrate', ['--force' => true]);
+//         return Response::json([
+//             'message' => 'Migration başarılı',
+//             'output' => Artisan::output()
+//         ], 200);
+//     } catch (\Throwable $e) {
+//         return Response::json([
+//             'error' => $e->getMessage()
+//         ], 500);
+//     }
+// });
 
-Route::get('/run-ililce-seed', function () {
+// Route::get('/run-ililce-seed', function () {
+//     try {
+//         Artisan::call('db:seed', [
+//             '--class' => 'IlIlceMahalleImportSeeder',
+//             '--force' => true,
+//         ]);
+
+//         return response()->json([
+//             'status' => '✅ Seeder başarıyla çalıştı',
+//             'output' => Artisan::output()
+//         ]);
+//     } catch (\Throwable $e) {
+//         return response()->json([
+//             'status' => '❌ Hata oluştu',
+//             'error' => $e->getMessage()
+//         ], 500);
+//     }
+// });
+
+Route::get('/run-storage-link', function () {
     try {
-        Artisan::call('db:seed', [
-            '--class' => 'IlIlceMahalleImportSeeder',
-            '--force' => true,
-        ]);
+        Artisan::call('storage:link');
 
         return response()->json([
-            'status' => '✅ Seeder başarıyla çalıştı',
-            'output' => Artisan::output()
+            'status' => '✅ storage:link başarılı',
+            'output' => Artisan::output(),
         ]);
     } catch (\Throwable $e) {
         return response()->json([
             'status' => '❌ Hata oluştu',
-            'error' => $e->getMessage()
+            'error' => $e->getMessage(),
         ], 500);
     }
 });
