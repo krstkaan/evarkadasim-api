@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\ListingController as AdminListingController;
 use App\Http\Controllers\RecommendationController;
 use App\Http\Controllers\RoommateRequestController;
 use App\Http\Controllers\UserRatingController;
+use App\Http\Controllers\MatchFeedbackController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -34,6 +35,8 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('upload-profile-photo', [AuthController::class, 'uploadProfilePhoto']);
     Route::get('/cities', [LocationController::class, 'cities']);
     Route::get('/cities/{cityId}', [LocationController::class, 'districts']);
+    Route::post('/match-feedbacks', [MatchFeedbackController::class, 'store']);
+
 
     Route::prefix('dropdowns')->group(function () {
         Route::apiResource('roommate-genders', RoommateGenderController::class)->only(['index', 'store', 'update', 'destroy', 'show']);

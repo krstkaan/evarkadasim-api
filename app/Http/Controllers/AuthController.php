@@ -58,13 +58,15 @@ class AuthController extends Controller
         // 1. Kullanıcının sahibi olduğu ilanlara gelen accepted roommate request var mı?
         $ownerMatch = RoommateRequest::whereHas('listing', function ($query) use ($user) {
             $query->where('user_id', $user->id);
-        })->where('status', 'accepted')->with('user')->first();
+        })->where('status', 'accepted')->with(['user', 'listing'])->first();
 
         if ($ownerMatch) {
             $user->roommate = [
                 'id' => $ownerMatch->user->id,
                 'full_name' => $ownerMatch->user->name,
                 'started_at' => $ownerMatch->updated_at->toDateString(),
+                'listing_id' => $ownerMatch->listing->id, // ✅ Eklendi
+                'profile_photo_url' => $ownerMatch->user->profile_photo_url, // ✅ Bonus: Profil fotoğrafı
             ];
             return $user;
         }
@@ -81,6 +83,8 @@ class AuthController extends Controller
                 'id' => $owner->id,
                 'full_name' => $owner->name,
                 'started_at' => $requesterMatch->updated_at->toDateString(),
+                'listing_id' => $requesterMatch->listing->id, // ✅ Eklendi
+                'profile_photo_url' => $owner->profile_photo_url, // ✅ Bonus: Profil fotoğrafı
             ];
             return $user;
         }

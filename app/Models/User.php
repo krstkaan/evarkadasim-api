@@ -64,7 +64,9 @@ class User extends Authenticatable implements JWTSubject
         'onayli' => 'boolean',
         'character_test_done' => 'boolean',
         'dogum_tarihi' => 'date',
-        'is_helios' => 'boolean'
+        'is_helios' => 'boolean',
+        'last_feedback_at' => 'datetime',
+
 
     ];
 

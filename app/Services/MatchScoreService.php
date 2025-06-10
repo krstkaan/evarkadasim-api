@@ -10,8 +10,7 @@ class MatchScoreService
 
     public function __construct()
     {
-        // .env dosyasına PREDICT_SCORE_URL olarak örnek: http://127.0.0.1:8000/predict-score
-        $this->mlUrl = env('PREDICT_SCORE_URL', 'http://192.168.1.111:8001/predict-score');
+        $this->mlUrl = env('ML_URL') . '/predict-score';
     }
 
     public function getScore(string $label1, string $label2): ?float

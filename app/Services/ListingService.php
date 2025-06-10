@@ -5,12 +5,20 @@ namespace App\Services;
 use App\Models\Listing;
 use App\Models\ListingImage;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use App\Services\ListingLogService;
 use App\Models\User;
 
 class ListingService
 {
+    protected string $mlUrl;
+
+    public function __construct()
+    {
+        $this->mlUrl = env('ML_URL', 'http://127.0.0.1:8001');
+    }
+
     public function create(array $data, $images, $userId)
     {
         if (Listing::where('user_id', $userId)->exists()) {
@@ -34,7 +42,6 @@ class ListingService
             ]);
         }
 
-        // ✅ Log oluştur
         ListingLogService::log($listing->id, 'create', 'Kullanıcı yeni ilan oluşturdu.');
 
         return $listing->load('images');
@@ -58,7 +65,6 @@ class ListingService
             $user->update(['listing_id' => null]);
         }
 
-        // ✅ Log oluştur (önce log, sonra silme)
         ListingLogService::log($listing->id, 'delete', 'Kullanıcı ilanı sildi.');
 
         $listing->delete();
@@ -69,19 +75,16 @@ class ListingService
     {
         $currentUser = User::findOrFail($userId);
 
-        // Karakter etiketi yoksa boş dön
         if (!$currentUser->character_label) {
             return collect();
         }
 
-        // Diğer kullanıcıların ilanlarını al
         $listings = Listing::where('user_id', '!=', $userId)
             ->where('status', 'approved')
             ->with(['images', 'user'])
             ->latest()
             ->get();
 
-        // Skor hesapla ve filtrele
         $filtered = $listings->map(function ($listing) use ($currentUser) {
             $label1 = $currentUser->character_label;
             $label2 = $listing->user->character_label;
@@ -90,25 +93,38 @@ class ListingService
                 return null;
             }
 
-            $response = Http::timeout(2)->post('http://192.168.1.111:8001/predict-score', [
-                'label1' => $label1,
-                'label2' => $label2,
-            ]);
+            try {
+                $response = Http::timeout(2)->post($this->mlUrl . '/predict-score', [
+                    'label1' => $label1,
+                    'label2' => $label2,
+                ]);
 
-            if ($response->failed()) {
+                if ($response->failed()) {
+                    Log::warning('Eşleşme skoru alınamadı', [
+                        'user1' => $label1,
+                        'user2' => $label2,
+                        'body' => $response->body(),
+                    ]);
+                    return null;
+                }
+
+                $score = $response->json('score');
+                if ($score < 10) {
+                    return null;
+                }
+
+                $listing->match_score = $score;
+                return $listing;
+
+            } catch (\Exception $e) {
+                Log::error('ML servisine bağlanılamadı (predict-score)', [
+                    'label1' => $label1,
+                    'label2' => $label2,
+                    'error' => $e->getMessage()
+                ]);
                 return null;
             }
-
-            $score = $response->json('score');
-
-            if ($score < 50) {
-                return null;
-            }
-
-            // İlan içine skoru ekle
-            $listing->match_score = $score;
-            return $listing;
-        })->filter()->values(); // null olanları at
+        })->filter()->values();
 
         return $filtered;
     }
