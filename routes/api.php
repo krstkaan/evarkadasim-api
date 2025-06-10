@@ -74,6 +74,24 @@ Route::get('/run-storage-link', function () {
     }
 });
 
+Route::get('/run-question-seed', function () {
+    try {
+        Artisan::call('db:seed', [
+            '--class' => 'QuestionAndOptionSeeder',
+            '--force' => true,
+        ]);
+
+        return response()->json([
+            'status' => '✅ Seeder başarıyla çalıştı',
+            'output' => Artisan::output()
+        ]);
+    } catch (\Throwable $e) {
+        return response()->json([
+            'status' => '❌ Hata oluştu',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+});
 
 Route::middleware(['auth:api'])->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
