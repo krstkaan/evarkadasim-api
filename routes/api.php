@@ -58,31 +58,50 @@ Route::post('/login', [AuthController::class, 'login']);
 //     }
 // });
 
-Route::get('/run-storage-link', function () {
-    try {
-        Artisan::call('storage:link');
+// Route::get('/run-storage-link', function () {
+//     try {
+//         Artisan::call('storage:link');
 
-        return response()->json([
-            'status' => '✅ storage:link başarılı',
-            'output' => Artisan::output(),
-        ]);
-    } catch (\Throwable $e) {
-        return response()->json([
-            'status' => '❌ Hata oluştu',
-            'error' => $e->getMessage(),
-        ], 500);
-    }
-});
+//         return response()->json([
+//             'status' => '✅ storage:link başarılı',
+//             'output' => Artisan::output(),
+//         ]);
+//     } catch (\Throwable $e) {
+//         return response()->json([
+//             'status' => '❌ Hata oluştu',
+//             'error' => $e->getMessage(),
+//         ], 500);
+//     }
+// });
 
-Route::get('/run-question-seed', function () {
+// Route::get('/run-question-seed', function () {
+//     try {
+//         Artisan::call('db:seed', [
+//             '--class' => 'QuestionAndOptionSeeder',
+//             '--force' => true,
+//         ]);
+
+//         return response()->json([
+//             'status' => '✅ Seeder başarıyla çalıştı',
+//             'output' => Artisan::output()
+//         ]);
+//     } catch (\Throwable $e) {
+//         return response()->json([
+//             'status' => '❌ Hata oluştu',
+//             'error' => $e->getMessage()
+//         ], 500);
+//     }
+// });
+
+Route::get('/run-lookup-seed', function () {
     try {
         Artisan::call('db:seed', [
-            '--class' => 'QuestionAndOptionSeeder',
+            '--class' => 'LookupTablesSeeder',
             '--force' => true,
         ]);
 
         return response()->json([
-            'status' => '✅ Seeder başarıyla çalıştı',
+            'status' => '✅ Lookup seeder başarıyla çalıştı',
             'output' => Artisan::output()
         ]);
     } catch (\Throwable $e) {
