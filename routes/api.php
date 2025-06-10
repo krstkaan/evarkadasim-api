@@ -23,7 +23,10 @@ use App\Http\Controllers\MatchFeedbackController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
-
+Route::get('/migrate', function () {
+    \Artisan::call('migrate', ['--force' => true]);
+    return response()->json(['message' => 'Migration çalıştı!']);
+});
 Route::middleware(['auth:api'])->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::post('/update-profile', [AuthController::class, 'updateProfile']);
