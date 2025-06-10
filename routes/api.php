@@ -38,6 +38,22 @@ Route::get('/migrate', function () {
         ], 500);
     }
 });
+
+Route::get('/run-ililce-seed', function () {
+    try {
+        Artisan::call('db:seed', ['--class' => 'IlIlceMahalleSeeder']);
+        return response()->json([
+            'status' => '✅ Seeder başarıyla çalıştı',
+            'output' => Artisan::output()
+        ]);
+    } catch (\Throwable $e) {
+        return response()->json([
+            'status' => '❌ Hata oluştu',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+});
+
 Route::middleware(['auth:api'])->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::post('/update-profile', [AuthController::class, 'updateProfile']);
